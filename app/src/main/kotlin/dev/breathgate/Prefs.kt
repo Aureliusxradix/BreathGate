@@ -170,6 +170,39 @@ class Prefs(context: Context) {
         set(v) = sp.edit().putInt(K_SOUNDVOL, v.coerceIn(0, 100)).apply()
 
     /**
+     * WHERE THE MELODY SITS — his note, 2026-08-16: *"music is too high pitch for my taste."*
+     *
+     * The struck bell was pinned two octaves above the drone. That is a defensible place to put a
+     * melody and a terrible place to have no choice about: **pitch preference is not a bug to fix
+     * once, it is a knob**, and one person's clear is another's shrill.
+     *
+     * Octaves relative to that original: -2 · -1 · 0 · +1. **Default moved down one**, because the
+     * person who has actually listened to it said it was too bright.
+     */
+    var soundOctave: Int
+        get() = sp.getInt(K_SOUNDOCT, -1)
+        set(v) = sp.edit().putInt(K_SOUNDOCT, v.coerceIn(-2, 1)).apply()
+
+    /**
+     * HOW MUCH LIGHT IS IN IT — a separate axis from pitch, and the distinction matters.
+     *
+     * A sound can sit low and still be piercing, because "bright" is upper harmonics, not
+     * fundamental frequency. This scales the bell's upper partials **and** closes the pad's
+     * filter, so turning it down darkens the whole voice rather than just moving it.
+     *
+     * Two controls instead of one because *"too high"* has two possible causes, and a single
+     * knob would fix it for whichever of them the author guessed.
+     */
+    var soundBrightness: Int
+        get() = sp.getInt(K_SOUNDBRIGHT, 45)
+        set(v) = sp.edit().putInt(K_SOUNDBRIGHT, v.coerceIn(0, 100)).apply()
+
+    /** Drone only, no struck notes — for when the melody is the thing that is too much. */
+    var soundBells: Boolean
+        get() = sp.getBoolean(K_SOUNDBELLS, true)
+        set(v) = sp.edit().putBoolean(K_SOUNDBELLS, v).apply()
+
+    /**
      * Off, the counts stop at 10 — nobody's ordinary breath is a twenty-second inhale, and a
      * slider that can reach there mostly makes the useful range hard to hit. On, the sliders
      * become plain number fields and the caps come off.
@@ -232,5 +265,8 @@ class Prefs(context: Context) {
         private const val K_SOUNDVOL = "sound_volume"
         private const val K_TUNING = "custom_tuning"
         private const val K_SIMPLE = "simple_mode"
+        private const val K_SOUNDOCT = "sound_octave"
+        private const val K_SOUNDBRIGHT = "sound_brightness"
+        private const val K_SOUNDBELLS = "sound_bells"
     }
 }

@@ -131,8 +131,10 @@ class BreathView(
         super.onAttachedToWindow()
         if (p.sound) {
             sound = runCatching {
-                BreathSound(context, Theme.forPrefs(p), p.restingBpm, p.heartbeat, p.soundVolume)
-                    .also { it.start() }
+                BreathSound(
+                    context, Theme.forPrefs(p), p.restingBpm, p.heartbeat, p.soundVolume,
+                    p.soundOctave, p.soundBrightness, p.soundBells
+                ).also { it.start() }
             }.getOrNull()
         }
         animator = ValueAnimator.ofFloat(0f, total.toFloat()).apply {

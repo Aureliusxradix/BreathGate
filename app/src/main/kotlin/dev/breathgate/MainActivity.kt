@@ -368,6 +368,44 @@ class MainActivity : AppCompatActivity() {
         fine("A drone in the palette's own key, generated on this phone — no file, no download, and still no internet permission. It climbs as you fill and falls as you empty. With the heartbeat on, you hear the same pulse you see.")
         if (p.sound) {
             count("    ↳ volume", p.soundVolume, 0, 100, unit = { "$it%" }) { p.soundVolume = it }
+
+            // ⭐ TWO CONTROLS, NOT ONE — because "too high" has two possible causes and a single
+            // knob would only fix whichever the author guessed. Pitch moves the notes; brightness
+            // removes the upper harmonics that make even a low note sound piercing.
+            gap(22)
+            body("Pitch")
+            val pitches = listOf("deep" to -2, "low" to -1, "mid" to 0, "bright" to 1)
+            val pitchRow = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
+            pitches.forEach { (name, oct) ->
+                pitchRow.addView(Button(this).apply {
+                    text = if (p.soundOctave == oct) "● $name" else name
+                    isAllCaps = false; textSize = 14f
+                    setTextColor(col(if (p.soundOctave == oct) R.color.accent else R.color.ink_soft))
+                    setBackgroundColor(android.graphics.Color.TRANSPARENT)
+                    setPadding(0, 0, 36, 0)
+                    setOnClickListener { p.soundOctave = oct; render() }
+                })
+            }
+            root.addView(HorizontalScrollView(this).apply {
+                isHorizontalScrollBarEnabled = false; addView(pitchRow)
+            })
+            fine("Where the struck notes sit. The drone underneath does not move — it is already low, and it is what the body answers.")
+
+            count("    ↳ brightness", p.soundBrightness, 0, 100, unit = {
+                when { it < 25 -> "$it · dark"; it < 60 -> "$it · warm"; else -> "$it · open" }
+            }) { p.soundBrightness = it }
+            fine("A separate thing from pitch: brightness is the upper harmonics, which is why a low sound can still be piercing. Down darkens the whole voice, not just the notes.")
+
+            gap(14)
+            root.addView(CheckBox(this).apply {
+                text = "Struck notes"
+                setTextColor(col(R.color.ink))
+                isChecked = p.soundBells
+                setOnCheckedChangeListener { _, v -> p.soundBells = v; render() }
+            })
+            fine("Off, only the drone remains — for when the melody itself is the thing that is too much.")
+
+            gap(8)
             val t = Theme.forPrefs(p)
             fine("Now playing in ${t.name} — ${"%.0f".format(t.rootHz)} Hz. Each palette has its own.")
             if (p.palette == Palette.CUSTOM) {

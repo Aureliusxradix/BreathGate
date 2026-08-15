@@ -46,11 +46,25 @@ class BreathSound(
     private val tuning: Tuning,
     private val bpm: Int,
     private val heartOn: Boolean,
-    volumePercent: Int
+    volumePercent: Int,
+    /** Octaves to shift the struck notes, relative to two above the drone. See Prefs.soundOctave. */
+    octave: Int = 0,
+    /** 0 dark … 100 bright. Upper partials AND the pad's filter. See Prefs.soundBrightness. */
+    brightness: Int = 45,
+    private val bellsOn: Boolean = true
 ) {
 
     private val am = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     private val gain = (volumePercent.coerceIn(0, 100) / 100f) * 0.9f
+
+    /** ×4 was the original fixed position — two octaves above the drone. Now the middle of a range. */
+    private val bellMul = 4f * Math.pow(2.0, octave.coerceIn(-2, 1).toDouble()).toFloat()
+
+    /**
+     * 0 → 2. At 50 everything sits where it was originally voiced, so the control reads as
+     * "darker than / brighter than what you already know" rather than as an absolute scale.
+     */
+    private val bright = (brightness.coerceIn(0, 100) / 50.0)
 
     private var track: AudioTrack? = null
     private var thread: Thread? = null
@@ -76,10 +90,12 @@ class BreathSound(
         targetOpen = open
         if (index != lastIndex) {
             lastIndex = index
+            if (!bellsOn) return
             val d = tuning.degrees
-            // up two octaves from the drone's root, so the bell sings above the pad rather than
-            // muddying it — 110 Hz root gives a 440 Hz bell
-            pendingNote = tuning.rootHz * 4f * Theme.ratio(d[index % d.size].toFloat())
+            // `bellMul` sits the note above the pad without muddying it. Originally pinned at ×4 —
+            // two octaves up, a 440 Hz bell from a 110 Hz root — which was too bright for the only
+            // person who had heard it. Now the middle of a four-position range.
+            pendingNote = tuning.rootHz * bellMul * Theme.ratio(d[index % d.size].toFloat())
         }
     }
 
@@ -258,7 +274,10 @@ class BreathSound(
 
                 // one-pole, opening as the breath fills. A filter sweep on a pad is the oldest
                 // trick there is for making sound feel like breathing, and it is the right one.
-                val cut = LP_MIN + (LP_MAX - LP_MIN) * open
+                // The filter ceiling rides `bright` too, so the darkness control darkens the whole
+                // voice rather than only the struck notes. Floor stays put — closing the bottom end
+                // as well would make a dark setting sound muffled instead of warm.
+                val cut = LP_MIN + (LP_MAX * bright - LP_MIN).coerceAtLeast(120.0) * open
                 val a = (TAU * cut / RATE).coerceIn(0.002, 0.85)
                 lp += a * (pad - lp)
 
@@ -273,7 +292,10 @@ class BreathSound(
                     if (b.p1 > TAU) b.p1 -= TAU
                     if (b.p2 > TAU) b.p2 -= TAU
                     if (b.p3 > TAU) b.p3 -= TAU
-                    bell += (sin(b.p1) + 0.34 * sin(b.p2) + 0.12 * sin(b.p3)) * env
+                    // Upper partials ride `bright`. Turning it down does not merely make the bell
+                    // quieter — it removes the harmonics that make a low note still sound piercing,
+                    // which is the actual complaint behind "too high".
+                    bell += (sin(b.p1) + 0.34 * bright * sin(b.p2) + 0.12 * bright * bright * sin(b.p3)) * env
                     b.t += 1.0 / RATE
                     if (b.t > BELL_LIFE) b.t = -1.0
                 }

@@ -4,6 +4,17 @@ Versions before 0.12.0 were distributed privately while the app was shaped again
 They are listed because a project that appears fully formed is hiding how it got there, and the
 mistakes below are the most useful part of this file.
 
+## 0.13.0
+
+- **The sound has a pitch control.** The struck notes were pinned two octaves above the drone,
+  which is a defensible place to put a melody and a terrible place to have no choice about. Four
+  positions — deep, low, mid, bright — and the default moved down one, because the only person who
+  had actually listened to it said it was too bright.
+- **And a separate brightness control**, because "too high" has two causes. Brightness is upper
+  harmonics, which is why a low sound can still be piercing; turning it down darkens the bells and
+  closes the pad's filter together.
+- Struck notes can be switched off entirely, leaving only the drone.
+
 ## 0.12.1 — first public release
 
 - Same as 0.12.0 below, with the source link inside the app pointing at where the source actually
