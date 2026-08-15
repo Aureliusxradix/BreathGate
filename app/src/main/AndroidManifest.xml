@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- The gate mechanism. Usage Access, NOT AccessibilityService: Play is actively
+         restricting the accessibility API for non-accessibility apps (enforcement from
+         2026-01-28) and Advanced Protection Mode revokes it outright. -->
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!-- DELIBERATELY ABSENT: android.permission.INTERNET.
+         The missing permission is the product's honesty made checkable — this app cannot
+         phone home, and anyone can verify that from the manifest alone. Do not add it. -->
+
+    <!-- Android 11+ hides the installed-app list from other apps by default. Without this the
+         picker showed only a couple of always-visible system apps, which looked like a bug and
+         was the OS working as designed.
+         Declaring the LAUNCHER intent (rather than asking for QUERY_ALL_PACKAGES) gets exactly
+         what an app-picker needs and stays clear of Play's sensitive-permission review. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+    </queries>
+
+    <application
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.BreathGate">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".PaletteActivity" android:exported="false" />
+
+        <!-- The gift and the line back. Every action on this screen is an intent handed OUT to a
+             mail app or a browser — this app still cannot reach the network itself. -->
+        <activity android:name=".SupportActivity" android:exported="false" />
+
+        <activity
+            android:name=".TestRunActivity"
+            android:exported="false"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
+
+        <service
+            android:name=".GateService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Draws a breathing pause in front of user-selected apps" />
+        </service>
+
+        <receiver
+            android:name=".BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

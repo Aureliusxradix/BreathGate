@@ -1,0 +1,19 @@
+<resources>
+    <!-- Light. Warm paper, deep ink, one accent — never black-on-grey. -->
+    <color name="bg">#F4F2ED</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="ink">#1C1F1E</color>
+    <color name="ink_soft">#5E6663</color>
+    <color name="accent">#2E6B60</color>
+    <color name="hairline">#DDD9D1</color>
+    <!-- The gate is its own world: it stays dark in both themes, so the pause reads as a
+         different room rather than a dialog on top of the one you were in. -->
+    <color name="gate_bg">#0E1113</color>
+    <color name="gate_fill">#16211F</color>
+    <color name="gate_ring">#3E6B63</color>
+    <color name="gate_text">#C8D3CF</color>
+    <color name="gate_text_soft">#6E807B</color>
+    <!-- The holds get their own colour so a hold reads as a held state, not a stalled one. -->
+    <color name="gate_hold">#4E7F5E</color>
+    <color name="gate_hold_empty">#2A3E52</color>
+</resources>

@@ -1,0 +1,22 @@
+# Build output
+build/
+app/build/
+.gradle/
+.kotlin/
+local.properties
+
+# ⚠ Signing material. Losing the keystore means this app can never be updated again for anyone
+# who installed it; publishing it means anyone can sign an update as you. Neither belongs in git.
+*.jks
+*.keystore
+*.p12
+keystore.properties
+
+# Releases are attached to a release, not committed. A repository holds source.
+*.apk
+*.aab
+
+# Editors
+.idea/
+*.iml
+.DS_Store

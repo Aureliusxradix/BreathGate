@@ -1,0 +1,16 @@
+<resources>
+    <color name="bg">#101312</color>
+    <color name="surface">#171B1A</color>
+    <color name="ink">#E6EAE8</color>
+    <color name="ink_soft">#9BA6A2</color>
+    <color name="accent">#69B3A4</color>
+    <color name="hairline">#262C2A</color>
+    <color name="gate_bg">#0E1113</color>
+    <color name="gate_fill">#16211F</color>
+    <color name="gate_ring">#3E6B63</color>
+    <color name="gate_text">#C8D3CF</color>
+    <color name="gate_text_soft">#6E807B</color>
+    <!-- The holds get their own colour so a hold reads as a held state, not a stalled one. -->
+    <color name="gate_hold">#4E7F5E</color>
+    <color name="gate_hold_empty">#2A3E52</color>
+</resources>

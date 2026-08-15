@@ -1,0 +1,86 @@
+# F-Droid metadata for fdroiddata.
+#
+# ⚠ THIS IS THE TEMPLATE, NOT THE SUBMITTABLE FILE. The repository URL, the version, the version
+# code and the release tag are substituted by publish/publish.sh from the places that actually
+# decide them — publish/repo.env and app/build.gradle.kts. **Submit the copy from the PUBLIC tree.**
+# Nothing may ship with a placeholder still in it, and publish.sh aborts if one survives.
+#
+# ⚠ READ BEFORE SUBMITTING — the signature consequence, which is not obvious and is not
+# reversible for existing installs:
+#
+#   f-droid.org normally BUILDS FROM SOURCE AND SIGNS WITH F-DROID'S OWN KEY. Android identifies
+#   an app by its signature, so an F-Droid-signed BreathGate is a DIFFERENT APP to the operating
+#   system than the one distributed from the release channel. Anyone already running the
+#   release-signed build cannot update to it — they would have to uninstall, losing their
+#   settings, and reinstall. The two install bases can never cross over afterwards.
+#
+#   The way out is `AllowedAPKSigningKeys` plus F-Droid's reproducible-builds process: F-Droid
+#   rebuilds, verifies their output matches the published APK bit for bit, and then ships the
+#   ORIGINAL signed APK, keeping one lineage for everyone. That is the right destination, but
+#   Android Gradle builds are not reproducible by default — build timestamps, R8 nondeterminism,
+#   signing-block ordering — so it is a project, not a checkbox.
+#
+#   The key is recorded below either way: it is what makes that path possible later, and it costs
+#   nothing now.
+
+Categories:
+  - Time
+  - System
+License: GPL-3.0-only
+AuthorName: BreathGate
+AuthorEmail: infobreathgate.gladiator565@passmail.net
+SourceCode: https://github.com/aureliusxradix/breathgate
+IssueTracker: https://github.com/aureliusxradix/breathgate/issues
+Changelog: https://github.com/aureliusxradix/breathgate/blob/main/CHANGELOG.md
+
+AutoName: BreathGate
+Summary: One breath before the door opens
+
+Description: |-
+    A conscious gate in front of an unconscious intake. When an app you have chosen comes to the
+    foreground, BreathGate asks for a breath — and then asks whether you still want to go in.
+
+    It is not a blocker. Blockers get uninstalled at the exact moment they are needed. This asks
+    for about twenty seconds and a decision, then gets out of the way either way.
+
+    '''There is no INTERNET permission, and there never will be.''' Not a promise about data
+    collection that you would have to take on trust — the app cannot reach the network at all, and
+    you can verify that from the manifest before installing. No account, no sync, no analytics, no
+    crash reporting, no server.
+
+    * Box breathing (4·4·4·4) by default, plus 4-7-8, simple in-and-out, or any counts you choose.
+    * Five ways of drawing the breath, all growing from the centre: orb, bloom, box, guilloche,
+      and coral — a lung whose tubes fill with air from the middle out.
+    * Every prompt is editable, including the question at the end.
+    * Re-intervention: the gate returns while you are still inside a long session, not only when
+      you re-open the app. Set per app.
+    * Optional sound, generated on the device: a drone in the palette's own key and a bell on each
+      phase change. No audio files, no downloads.
+    * Optional heartbeat pulse, in colour and in sound, driven by one shared function.
+    * Six palettes plus a hand-built one, and a light mode.
+
+    Uses Usage Access rather than an AccessibilityService — deliberately, since that API is being
+    restricted for non-accessibility apps and is revoked outright under Advanced Protection Mode.
+
+RepoType: git
+Repo: https://github.com/aureliusxradix/breathgate
+
+# ⚠ Versions are SUBSTITUTED by publish.sh from app/build.gradle.kts, which is the only place a
+# version is decided. They were briefly hand-maintained here and immediately drifted — the
+# versionCode was bumped and the versionName beside it was not, which would have submitted a build
+# labelled 0.11.1 carrying code 14. Two copies of one fact is one copy too many.
+Builds:
+  - versionName: 0.12.1
+    versionCode: 15
+    commit: v0.12.1
+    subdir: app
+    gradle:
+      - gift
+
+# SHA-256 of the release signing certificate, from `apksigner verify --print-certs`.
+AllowedAPKSigningKeys: d0b6b276aa2cffc4b1b2850d2373dd3958c92bd68aa29a6ed76c17ffb25d75b0
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: 0.12.1
+CurrentVersionCode: 15
