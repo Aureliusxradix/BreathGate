@@ -40,9 +40,9 @@ say what the wrong version did.
 
 ## On how this was written
 
-Most of this code was written by an AI under the author's direction — stated in the README rather
-than left to be discovered. It is worth knowing before you send a patch, because some people will
-not want to contribute to a codebase built that way, and that is a fair position to hold.
+Most of this code was written by an AI under the author's direction — named in the README rather
+than left to be found. Worth knowing before you send a patch: some people will not want to build
+on a codebase made that way, and that is a fair line to draw.
 
 If you do contribute, your work is yours and is credited as yours.
 

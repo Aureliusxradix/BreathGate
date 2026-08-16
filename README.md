@@ -117,42 +117,44 @@ one codebase:
 
 ## How this was made
 
-**Most of the code here was written by an AI — Claude — working under my direction. I would
-rather say that plainly than have it found out.**
+**Most of the code here was written by an AI — Claude — under my direction. I would rather name it
+than have it found.**
 
-I decided what this app is, what it refuses to do, and what stays out of it. Every feature exists
-because I used the thing and something was wrong: the movement was flat, the sound was too bright,
-the words landed on top of each other at the worst possible moment. That record is in the commit
-history and the changelog, which are unusually detailed on purpose — they say what was wrong
-before each fix, not only what changed.
+The molt is real when you can name what you shed. So: I did not type this. I decided it. What it
+is, what it refuses, what stays out — those are mine, and every one of them arrived because I used
+the thing and something was wrong. The movement was flat. The sound was too bright. The words
+landed on top of each other at the worst possible moment. The commit history says what was wrong
+before each fix, not only what changed, because that is the honest shape of how it was actually
+made.
 
-The work is mine in the way that matters: **I am responsible for it.** If this app does something
-it should not, that is on me, and there is nobody else to point at.
+**Responsibility does not thin out because a machine held the pen.** It runs the other way — the
+more leverage you take, the more of the weight is yours to carry. If this app does something it
+should not, that is mine. There is nobody standing behind me.
 
-Two worries usually sit behind the question. Both deserve an answer rather than a shrug.
+Two things sit underneath the question, and neither deserves a shrug.
 
-**Copyright.** Whether machine-written code attracts copyright is unsettled, and I am not going to
-pretend otherwise. The licence is GPL-3.0 and the intent is not ambiguous: this is a gift, and
-**nobody gets to enclose it, add the tracking it refuses, and sell it back to you.** Where
-copyright applies, copyleft binds it. Where it does not, the code is free regardless. Either way
-you are no worse off than if I had typed every line myself.
+**Ownership.** Whether machine-written code carries copyright is unsettled, and I will not pretend
+otherwise to sound solid. It changes nothing about the intent. **What moves through can be
+transmitted; it cannot be enclosed.** GPL-3 binds what it can bind, and what it cannot bind is
+free anyway. There is no version of this where somebody fences it, adds the tracking it refuses,
+and sells it back to you.
 
-**Whether anyone checked it.** This is the one I would push back on, because this app carries more
-structural protection than most hand-written software:
+**Whether anyone stood over it.** Here I push back, because this is built to be checked rather
+than believed:
 
-- **No `INTERNET` permission.** Not a policy — an absence, enforced by Android, and checkable from
-  the manifest before you install anything.
+- **No `INTERNET` permission.** Not a policy — an absence, enforced by the operating system, and
+  visible in the manifest before you install anything.
 - The release script **refuses to publish** a build that has acquired one.
 - **The build is reproducible.** Independent builds of this source produce a byte-identical APK,
-  so what I publish can be checked against a rebuild rather than trusted.
+  so what I publish can be rebuilt and compared instead of taken on faith.
 - The signing certificate hash is published, the source is all here, and every release is verified
-  by downloading it back and comparing it to what was signed.
+  by downloading it back and checking it against what was signed.
 
-None of that is a claim about who wrote the code. All of it is something you can verify yourself,
-which is the only kind of assurance worth offering.
+None of that is an argument about who wrote the code. All of it is something you can put your own
+hands on — which is the only kind of assurance worth offering anyone.
 
-**If this rules the app out for you, that is a legitimate line to draw — and I would rather you
-drew it knowingly than found out later.**
+**If this rules the app out for you, draw that line. I would rather you drew it standing in the
+light than found it later in the dark.**
 
 ## Licence
 
