@@ -36,7 +36,7 @@ object Contact {
      * ⚠ One line to change if the account name differs — and it is referenced in exactly one
      * place, for the same reason the address is.
      */
-    const val SOURCE = "https://github.com/aureliusxradix/breathgate"
+    const val SOURCE = "https://github.com/Aureliusxradix/BreathGate"
 
     /**
      * ⚠ THE DONATION CHANNELS LIVE IN `Flavour`, NOT HERE — one per source set.

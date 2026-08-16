@@ -5,23 +5,32 @@
 # decide them — publish/repo.env and app/build.gradle.kts. **Submit the copy from the PUBLIC tree.**
 # Nothing may ship with a placeholder still in it, and publish.sh aborts if one survives.
 #
-# ⚠ READ BEFORE SUBMITTING — the signature consequence, which is not obvious and is not
-# reversible for existing installs:
+# ⚠ READ BEFORE SUBMITTING — the signature question, and what changed about it.
 #
 #   f-droid.org normally BUILDS FROM SOURCE AND SIGNS WITH F-DROID'S OWN KEY. Android identifies
-#   an app by its signature, so an F-Droid-signed BreathGate is a DIFFERENT APP to the operating
-#   system than the one distributed from the release channel. Anyone already running the
-#   release-signed build cannot update to it — they would have to uninstall, losing their
-#   settings, and reinstall. The two install bases can never cross over afterwards.
+#   an app by its signature, so an F-Droid-signed build is a DIFFERENT APP to the operating
+#   system: an existing install cannot update to it without being removed first, and the two
+#   install bases can never cross over afterwards. That was the single reason this stayed parked.
 #
-#   The way out is `AllowedAPKSigningKeys` plus F-Droid's reproducible-builds process: F-Droid
-#   rebuilds, verifies their output matches the published APK bit for bit, and then ships the
-#   ORIGINAL signed APK, keeping one lineage for everyone. That is the right destination, but
-#   Android Gradle builds are not reproducible by default — build timestamps, R8 nondeterminism,
-#   signing-block ordering — so it is a project, not a checkbox.
+# ⭐ IT IS AVOIDABLE, AND THAT IS NOW MEASURED RATHER THAN HOPED.
+#   F-Droid's reproducible-builds path has them rebuild from source, verify the result matches the
+#   developer's published APK bit for bit, and then ship the DEVELOPER'S signed APK — one lineage
+#   for everybody. It requires the build to be deterministic, which Android Gradle builds are
+#   famously not, by default.
 #
-#   The key is recorded below either way: it is what makes that path possible later, and it costs
-#   nothing now.
+#   Tested 2026-08-16, three independent builds of the same source on the same toolchain:
+#     · different directories, different times          → identical
+#     · different path LENGTH, TZ=UTC, LC_ALL=C         → identical
+#     SHA-256 of the unsigned APK, all three: 7debc87781a6b59db83cb729aef03ffc4d794e517ea1c1eea6690780c52ae24f
+#
+#   Why it holds here: `isMinifyEnabled = false` removes R8, which is the usual culprit; the
+#   Gradle wrapper pins 8.11.1; AGP and Kotlin are pinned; and nothing injects a build timestamp.
+#   ⚠ Still unproven CROSS-MACHINE — F-Droid builds on their own JDK and build-tools, and those
+#   are the remaining variables. Same-machine determinism is necessary, not sufficient. But it is
+#   the hurdle that usually fails, and it did not.
+#
+# `Binaries:` below is what asks for that path: it tells F-Droid where the developer's own APK
+# lives so it can be verified against their rebuild instead of replaced by it.
 
 Categories:
   - Time
@@ -29,9 +38,9 @@ Categories:
 License: GPL-3.0-only
 AuthorName: BreathGate
 AuthorEmail: infobreathgate.gladiator565@passmail.net
-SourceCode: https://github.com/aureliusxradix/breathgate
-IssueTracker: https://github.com/aureliusxradix/breathgate/issues
-Changelog: https://github.com/aureliusxradix/breathgate/blob/main/CHANGELOG.md
+SourceCode: https://github.com/Aureliusxradix/BreathGate
+IssueTracker: https://github.com/Aureliusxradix/BreathGate/issues
+Changelog: https://github.com/Aureliusxradix/BreathGate/blob/main/CHANGELOG.md
 
 AutoName: BreathGate
 Summary: One breath before the door opens
@@ -63,7 +72,10 @@ Description: |-
     restricted for non-accessibility apps and is revoked outright under Advanced Protection Mode.
 
 RepoType: git
-Repo: https://github.com/aureliusxradix/breathgate
+Repo: https://github.com/Aureliusxradix/BreathGate
+
+# The developer's published APK, for reproducible verification (see the header).
+Binaries: https://github.com/Aureliusxradix/BreathGate/releases/download/v%v/BreathGate-%v.apk
 
 # ⚠ Versions are SUBSTITUTED by publish.sh from app/build.gradle.kts, which is the only place a
 # version is decided. They were briefly hand-maintained here and immediately drifted — the
