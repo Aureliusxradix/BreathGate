@@ -111,6 +111,16 @@ version passes the same freedom on.
 The invariant that licence protects in practice: **a fork that adds an `INTERNET` permission is a
 different program wearing this one's clothes.**
 
+## Supporting it
+
+Free, and staying free — nothing is behind a donation and nothing will be.
+
+- **Liberapay** — <https://liberapay.com/Aureliusxradix> (recurring; the platform takes no cut)
+- **Monero** — `87TdnZcH3TSLtneBhq9qzx9hKMUWfBUeTfF6RERT9NiVb4VJ6q3EA4YMwooSaTyxq3XVLcUrzU4QA9WdvaGPBSurA4WYwqs`
+
+Both are in the app's own support screen too, with a copy button for the second one, since
+ninety-five characters is not something anyone should be retyping.
+
 ## Asking for something
 
 Almost everything in this app arrived because someone used it and said what was wrong. The gate's

@@ -30,6 +30,20 @@ object Flavour {
      * subaddresses.
      */
     const val MONERO = "87TdnZcH3TSLtneBhq9qzx9hKMUWfBUeTfF6RERT9NiVb4VJ6q3EA4YMwooSaTyxq3XVLcUrzU4QA9WdvaGPBSurA4WYwqs"
-    const val LIBERAPAY = ""     // https://liberapay.com/…
-    const val KOFI = ""          // https://ko-fi.com/…
+
+    /**
+     * Live 2026-08-17. Non-profit, co-operatively run, **takes zero commission** — only the
+     * payment processor's fee reaches it. Recurring by design, which is the shape that actually
+     * sustains a thing rather than spiking once and going quiet.
+     *
+     * ⭐ The two channels are deliberately different in kind, not redundant: **Monero is sovereign**
+     * — no intermediary, no account, nobody who can decide to stop it — and **Liberapay is
+     * reachable**, for the far larger number of people who want to send a few dollars a month
+     * without installing anything or learning what a subaddress is. Neither one covers the other's
+     * people.
+     */
+    const val LIBERAPAY = "https://liberapay.com/Aureliusxradix"
+
+    /** Not set up, and not obviously needed while Liberapay covers the same ground without a cut. */
+    const val KOFI = ""
 }

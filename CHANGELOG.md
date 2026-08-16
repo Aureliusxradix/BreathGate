@@ -4,6 +4,13 @@ Versions before 0.12.0 were distributed privately while the app was shaped again
 They are listed because a project that appears fully formed is hiding how it got there, and the
 mistakes below are the most useful part of this file.
 
+## 0.13.1
+
+- Liberapay added beside Monero on the support screen. The two are different in kind rather than
+  redundant: Monero has no intermediary and nobody who can decide to stop it; Liberapay is
+  reachable by the far larger number of people who want to send a few dollars a month without
+  installing anything.
+
 ## 0.13.0
 
 - **The sound has a pitch control.** The struck notes were pinned two octaves above the drone,

@@ -1,0 +1,9 @@
+# GitHub renders this as a "Sponsor" button at the top of the repository and on every release.
+# It is the one funding surface people actually notice, because it sits where they already are
+# rather than waiting for them to go looking.
+#
+# ⚠ `custom` deliberately does NOT carry the Monero address. GitHub renders these as plain links,
+# and a 95-character wallet address is not a link — it would render as a broken one. The address
+# lives in the app's own support screen and in the README, where it can be shown as text with a
+# copy button beside it, which is the only form in which a wallet address is usable at all.
+liberapay: Aureliusxradix

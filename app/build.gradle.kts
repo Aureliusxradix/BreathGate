@@ -32,8 +32,8 @@ android {
         applicationId = "dev.breathgate"
         minSdk = 26
         targetSdk = 35
-        versionCode = 16
-        versionName = "0.13.0"
+        versionCode = 17
+        versionName = "0.13.1"
     }
 
     // Two flavours, one codebase (ruled 2026-08-13):
