@@ -44,10 +44,48 @@ class GateService : Service() {
     /** package -> uptimeMillis when it was last let through. Drives re-intervention. */
     private val enteredAt = HashMap<String, Long>()
 
+    /** Screen off: nobody can open anything, so nothing is watched. See [screenWatcher]. */
+    private var screenOn = true
+    /** Inside an app we have already let through — the next decision is minutes away, not frames. */
+    private var relaxed = false
+
     private val tick = object : Runnable {
         override fun run() {
             try { check() } catch (_: Throwable) { /* a bad poll must never kill the service */ }
-            handler.postDelayed(this, POLL_MS)
+            if (screenOn) handler.postDelayed(this, if (relaxed) POLL_RELAXED else POLL_ACTIVE)
+        }
+    }
+
+    /**
+     * ⭐ THE POLL STOPS DEAD WHEN THE SCREEN GOES OFF — and that is what pays for it being fast.
+     *
+     * The old loop ran every 350 ms forever, including all night with the screen dark, when it is
+     * impossible for anyone to open anything. That was pure waste, and the cost of it was being
+     * charged against the one moment precision actually matters: **the instant an app comes
+     * forward.** Spending nothing while the screen is off buys a much tighter poll while it is on,
+     * for less total work than before.
+     *
+     * A screen coming on also checks IMMEDIATELY rather than waiting for the next tick — unlocking
+     * straight into a watched app is exactly the case where a whole poll interval of delay is most
+     * visible.
+     */
+    private val screenWatcher = object : android.content.BroadcastReceiver() {
+        override fun onReceive(c: Context?, i: Intent?) {
+            when (i?.action) {
+                Intent.ACTION_SCREEN_OFF -> {
+                    screenOn = false
+                    handler.removeCallbacks(tick)
+                }
+                Intent.ACTION_SCREEN_ON, Intent.ACTION_USER_PRESENT -> {
+                    if (!screenOn) {
+                        screenOn = true
+                        // the foreground app may have changed while we were not looking
+                        lastForeground = null
+                        handler.removeCallbacks(tick)
+                        handler.post(tick)
+                    }
+                }
+            }
         }
     }
 
@@ -58,6 +96,17 @@ class GateService : Service() {
         usage = getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
         wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
         startForeground(NOTIF_ID, notification())
+
+        val f = android.content.IntentFilter().apply {
+            addAction(Intent.ACTION_SCREEN_ON)
+            addAction(Intent.ACTION_SCREEN_OFF)
+            addAction(Intent.ACTION_USER_PRESENT)
+        }
+        // These are protected system broadcasts, so NOT_EXPORTED is both correct and required
+        // from Android 13 onward.
+        androidx.core.content.ContextCompat.registerReceiver(
+            this, screenWatcher, f, androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED
+        )
         handler.post(tick)
     }
 
@@ -66,6 +115,7 @@ class GateService : Service() {
 
     override fun onDestroy() {
         handler.removeCallbacksAndMessages(null)
+        runCatching { unregisterReceiver(screenWatcher) }
         removeOverlay()
         super.onDestroy()
     }
@@ -86,9 +136,12 @@ class GateService : Service() {
 
         val entering = current != lastForeground
         lastForeground = current
-        if (current !in prefs.watched) return
+        if (current !in prefs.watched) { relaxed = false; return }
 
         val since = enteredAt[current]
+        // Already inside something we let through: the next decision is minutes away, so stop
+        // spending a tight poll on it. Back to the fast rate the moment anything else comes forward.
+        relaxed = since != null && !windowExpired(current, since)
 
         if (entering) {
             // Coming in from outside: gate unless we are still inside the window we granted.
@@ -147,9 +200,13 @@ class GateService : Service() {
             }
         }
 
+        // ⚠ BACKGROUND BEFORE `addView`, NOT AFTER — this was the second half of the glimpse.
+        // Setting it afterwards means the window's first composited frame can be drawn with
+        // nothing in it, and a transparent full-screen overlay shows the app underneath. One
+        // frame is enough to see, and it lands at the exact instant attention is on the screen.
+        container.setBackgroundColor(pal.bg)
         try {
             wm.addView(container, lp)
-            container.setBackgroundColor(pal.bg)
             overlay = container
         } catch (_: Throwable) {
             overlay = null
@@ -258,8 +315,24 @@ class GateService : Service() {
     companion object {
         private const val CHANNEL = "gate"
         private const val NOTIF_ID = 1
-        private const val POLL_MS = 350L
-        private const val LOOKBACK_MS = 10_000L
+        /**
+         * ⭐ HIS REPORT: *"I open an app and it runs + has a glimpse of the app before the gate
+         * loads."* Two causes compounding, and this is the larger one.
+         *
+         * At 350 ms, an app could be up and drawing for a third of a second before we even
+         * noticed — and `UsageStatsManager` adds its own latency on top, so the visible gap was
+         * worse than the number suggests. **The gate is a doorman; a doorman who arrives after you
+         * are through the door is a receipt.**
+         *
+         * 150 ms while the screen is on, and **nothing at all while it is off** ([screenWatcher]),
+         * which is where the budget comes from: the old loop polled all night for no possible
+         * benefit. [POLL_RELAXED] then backs off again once we are inside an app already let
+         * through, because re-intervention is measured in minutes and does not need frames.
+         */
+        private const val POLL_ACTIVE = 150L
+        private const val POLL_RELAXED = 600L
+        /** Long enough to survive a starved tick, short enough to stay cheap to parse. */
+        private const val LOOKBACK_MS = 5_000L
 
         fun start(ctx: Context) {
             val i = Intent(ctx, GateService::class.java)

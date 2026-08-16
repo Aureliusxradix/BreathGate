@@ -170,7 +170,7 @@ class Prefs(context: Context) {
         set(v) = sp.edit().putInt(K_SOUNDVOL, v.coerceIn(0, 100)).apply()
 
     /**
-     * WHERE THE MELODY SITS — his note, 2026-08-16: *"music is too high pitch for my taste."*
+     * WHERE THE MELODY SITS — his note, 2026-08-15: *"music is too high pitch for my taste."*
      *
      * The struck bell was pinned two octaves above the drone. That is a defensible place to put a
      * melody and a terrible place to have no choice about: **pitch preference is not a bug to fix

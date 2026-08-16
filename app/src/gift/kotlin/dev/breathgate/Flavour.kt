@@ -32,7 +32,7 @@ object Flavour {
     const val MONERO = "87TdnZcH3TSLtneBhq9qzx9hKMUWfBUeTfF6RERT9NiVb4VJ6q3EA4YMwooSaTyxq3XVLcUrzU4QA9WdvaGPBSurA4WYwqs"
 
     /**
-     * Live 2026-08-17. Non-profit, co-operatively run, **takes zero commission** — only the
+     * Live 2026-08-16. Non-profit, co-operatively run, **takes zero commission** — only the
      * payment processor's fee reaches it. Recurring by design, which is the shape that actually
      * sustains a thing rather than spiking once and going quiet.
      *

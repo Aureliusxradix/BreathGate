@@ -4,6 +4,19 @@ Versions before 0.12.0 were distributed privately while the app was shaped again
 They are listed because a project that appears fully formed is hiding how it got there, and the
 mistakes below are the most useful part of this file.
 
+## 0.14.0
+
+- **Fixed: the app was briefly visible before the gate appeared.** Two causes compounding. The
+  watcher polled every 350 ms, so an app could be up and drawing for a third of a second before it
+  was even noticed — a doorman who arrives after you are through the door is a receipt. It now
+  polls every 150 ms while the screen is on, and **not at all while the screen is off**, which is
+  where the budget comes from: the old loop ran all night for no possible benefit. It also backs
+  off again once you are inside an app it has already let through, since re-intervention is
+  measured in minutes.
+- The overlay's background is now set before the window is added rather than after, which removes
+  a single transparent frame at exactly the moment you were looking at it.
+- Unlocking the screen checks immediately instead of waiting for the next poll.
+
 ## 0.13.1
 
 - Liberapay added beside Monero on the support screen. The two are different in kind rather than
