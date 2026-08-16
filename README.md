@@ -74,6 +74,22 @@ accepted cost, not an oversight.
 place. It also side-steps Android's *Restricted Settings*, which otherwise blocks a sideloaded app
 from being granted Usage Access.
 
+**F-Droid** works too, via this project's own repository:
+
+> <https://aureliusxradix.github.io/fdroid/repo?fingerprint=A859EAFDA0219053FFEEEA63155CDB4C62B12959F61DF53A3839B5554BB8E504>
+
+Opening that link on a phone with F-Droid installed adds the repository in one tap. To add it by
+hand instead: **Settings → Repositories → +**, paste the URL without the fingerprint, and check the
+fingerprint matches:
+
+```
+A859EAFDA0219053FFEEEA63155CDB4C62B12959F61DF53A3839B5554BB8E504
+```
+
+⭐ **This repository ships the same APKs published here, signed with the same key** — so switching
+between the two never means an uninstall, and an app installed one way updates the other way.
+That is not true of apps rebuilt and re-signed by a store.
+
 If you install the APK by hand and a permission switch appears greyed out, that is Android holding
 it shut, not a bug:
 
