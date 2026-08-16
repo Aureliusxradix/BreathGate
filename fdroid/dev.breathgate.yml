@@ -71,6 +71,11 @@ Description: |-
     Uses Usage Access rather than an AccessibilityService — deliberately, since that API is being
     restricted for non-accessibility apps and is revoked outright under Advanced Protection Mode.
 
+    '''How this was made:''' most of the code was written by an AI under the author's direction.
+    That is stated openly rather than left to be discovered, along with what it does and does not
+    change — see "How this was made" in the README. The build is reproducible and the app has no
+    network permission at all, both of which you can check yourself.
+
 RepoType: git
 Repo: https://github.com/Aureliusxradix/BreathGate
 

@@ -115,6 +115,45 @@ one codebase:
   enforced in the source set, not in a runtime check: the play build contains no payment
   address at all, which you can confirm with `strings`.
 
+## How this was made
+
+**Most of the code here was written by an AI — Claude — working under my direction. I would
+rather say that plainly than have it found out.**
+
+I decided what this app is, what it refuses to do, and what stays out of it. Every feature exists
+because I used the thing and something was wrong: the movement was flat, the sound was too bright,
+the words landed on top of each other at the worst possible moment. That record is in the commit
+history and the changelog, which are unusually detailed on purpose — they say what was wrong
+before each fix, not only what changed.
+
+The work is mine in the way that matters: **I am responsible for it.** If this app does something
+it should not, that is on me, and there is nobody else to point at.
+
+Two worries usually sit behind the question. Both deserve an answer rather than a shrug.
+
+**Copyright.** Whether machine-written code attracts copyright is unsettled, and I am not going to
+pretend otherwise. The licence is GPL-3.0 and the intent is not ambiguous: this is a gift, and
+**nobody gets to enclose it, add the tracking it refuses, and sell it back to you.** Where
+copyright applies, copyleft binds it. Where it does not, the code is free regardless. Either way
+you are no worse off than if I had typed every line myself.
+
+**Whether anyone checked it.** This is the one I would push back on, because this app carries more
+structural protection than most hand-written software:
+
+- **No `INTERNET` permission.** Not a policy — an absence, enforced by Android, and checkable from
+  the manifest before you install anything.
+- The release script **refuses to publish** a build that has acquired one.
+- **The build is reproducible.** Independent builds of this source produce a byte-identical APK,
+  so what I publish can be checked against a rebuild rather than trusted.
+- The signing certificate hash is published, the source is all here, and every release is verified
+  by downloading it back and comparing it to what was signed.
+
+None of that is a claim about who wrote the code. All of it is something you can verify yourself,
+which is the only kind of assurance worth offering.
+
+**If this rules the app out for you, that is a legitimate line to draw — and I would rather you
+drew it knowingly than found out later.**
+
 ## Licence
 
 **GPL-3.0-only.** Deliberately, and the reasoning is the point rather than a formality.

@@ -38,6 +38,14 @@ deliberate: a comment that restates the code is noise, and a comment recording t
 prevents is the only documentation that survives being forgotten. Where you fix something subtle,
 say what the wrong version did.
 
+## On how this was written
+
+Most of this code was written by an AI under the author's direction — stated in the README rather
+than left to be discovered. It is worth knowing before you send a patch, because some people will
+not want to contribute to a codebase built that way, and that is a fair position to hold.
+
+If you do contribute, your work is yours and is credited as yours.
+
 ## Licence
 
 By contributing you agree your work ships under **GPL-3.0-only**, like the rest of it.
