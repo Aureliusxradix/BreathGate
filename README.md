@@ -117,44 +117,33 @@ one codebase:
 
 ## How this was made
 
-**Most of the code here was written by an AI — Claude — under my direction. I would rather name it
-than have it found.**
+Most of the code in this repository was written by an AI (Claude), directed by me.
 
-The molt is real when you can name what you shed. So: I did not type this. I decided it. What it
-is, what it refuses, what stays out — those are mine, and every one of them arrived because I used
-the thing and something was wrong. The movement was flat. The sound was too bright. The words
-landed on top of each other at the worst possible moment. The commit history says what was wrong
-before each fix, not only what changed, because that is the honest shape of how it was actually
-made.
+I chose what the app does, what it declines to do, and what stays out of it. Each feature came
+from using the app and finding a problem: the animation was flat, the sound was too bright, two
+pieces of text overlapped at the end of a breath. The commit messages and the changelog record
+what was wrong before each fix.
 
-**Responsibility does not thin out because a machine held the pen.** It runs the other way — the
-more leverage you take, the more of the weight is yours to carry. If this app does something it
-should not, that is mine. There is nobody standing behind me.
+I am responsible for the result. If the app misbehaves, that is mine to answer for.
 
-Two things sit underneath the question, and neither deserves a shrug.
+Two questions usually follow.
 
-**Ownership.** Whether machine-written code carries copyright is unsettled, and I will not pretend
-otherwise to sound solid. It changes nothing about the intent. **What moves through can be
-transmitted; it cannot be enclosed.** GPL-3 binds what it can bind, and what it cannot bind is
-free anyway. There is no version of this where somebody fences it, adds the tracking it refuses,
-and sells it back to you.
+**Does it carry copyright?** The law here is unsettled, and I will say so. The licence is GPL-3.0
+and the intent is fixed: this is given away, and anyone distributing a modified version passes on
+the same freedom. Where copyright applies, the licence binds it. Where the law is silent, the code
+stays free to use.
 
-**Whether anyone stood over it.** Here I push back, because this is built to be checked rather
-than believed:
+**Has anyone checked it?** Every claim below is one you can verify yourself:
 
-- **No `INTERNET` permission.** Not a policy — an absence, enforced by the operating system, and
-  visible in the manifest before you install anything.
-- The release script **refuses to publish** a build that has acquired one.
-- **The build is reproducible.** Independent builds of this source produce a byte-identical APK,
-  so what I publish can be rebuilt and compared instead of taken on faith.
-- The signing certificate hash is published, the source is all here, and every release is verified
-  by downloading it back and checking it against what was signed.
+- There is no `INTERNET` permission. It is visible in the manifest before you install.
+- The release script exits with an error if a build acquires one.
+- The build is reproducible. Independent builds of this source produce a byte-identical APK, so
+  you can rebuild it and compare.
+- The signing certificate SHA-256 is published with each release, and every release is downloaded
+  back and compared against the signed build before it is announced.
 
-None of that is an argument about who wrote the code. All of it is something you can put your own
-hands on — which is the only kind of assurance worth offering anyone.
-
-**If this rules the app out for you, draw that line. I would rather you drew it standing in the
-light than found it later in the dark.**
+Some people will decline to install software written this way. That is a reasonable position to
+hold, and it is why this section is here.
 
 ## Licence
 

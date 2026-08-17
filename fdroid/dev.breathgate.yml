@@ -71,10 +71,10 @@ Description: |-
     Uses Usage Access rather than an AccessibilityService — deliberately, since that API is being
     restricted for non-accessibility apps and is revoked outright under Advanced Protection Mode.
 
-    '''How this was made:''' most of the code was written by an AI under the author's direction.
-    Named here rather than left to be found. Responsibility does not thin out because a machine
-    held the pen — see "How this was made" in the README. The build is reproducible and the app
-    has no network permission at all, and you can put your own hands on both.
+    '''How this was made:''' most of the code was written by an AI, directed by the author, who is
+    responsible for the result. Stated here so you can decide with it in hand. See "How this was
+    made" in the README. The build is reproducible and the app has no network permission, and both
+    of those are things you can check yourself.
 
 RepoType: git
 Repo: https://github.com/Aureliusxradix/BreathGate
