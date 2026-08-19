@@ -10,12 +10,14 @@ This one asks for about twenty seconds and a decision, then steps aside whicheve
 
 ## Everything it can do
 
-The app requests six permissions. This is all of them:
+The app requests seven permissions. This is all of them:
 
 ```
 PACKAGE_USAGE_STATS        see which app came to the foreground
 SYSTEM_ALERT_WINDOW        draw over that app
 FOREGROUND_SERVICE         keep watching while the screen is on
+FOREGROUND_SERVICE_SPECIAL_USE
+                           the category Android 14 requires that service to declare
 POST_NOTIFICATIONS         show the notification Android requires of that service
 RECEIVE_BOOT_COMPLETED     start again after a restart
 dev.breathgate.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION

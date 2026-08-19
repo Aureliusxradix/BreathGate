@@ -2,7 +2,7 @@
 
 ## The rule that overrides everything else
 
-**The app requests six permissions, and `INTERNET` stays off that list.** Behind a flag, for a
+**The app requests seven permissions, and `INTERNET` stays off that list.** Behind a flag, for a
 crash reporter, for an update check, temporarily — the answer is the same each time. The release
 script reads the permission list on every build and stops if that one has appeared, and that stop
 is the product's only structural guarantee.

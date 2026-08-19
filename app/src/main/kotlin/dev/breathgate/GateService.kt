@@ -13,6 +13,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.os.PowerManager
 import android.os.SystemClock
 import android.provider.Settings
 import android.view.Gravity
@@ -37,55 +38,75 @@ class GateService : Service() {
     private lateinit var usage: UsageStatsManager
     private lateinit var wm: WindowManager
     private val handler = Handler(Looper.getMainLooper())
+    private lateinit var power: PowerManager
 
     private var overlay: View? = null
     private var lastForeground: String? = null
 
-    /** package -> uptimeMillis when it was last let through. Drives re-intervention. */
+    /**
+     * package -> [SystemClock.elapsedRealtime] when it was let through. Drives re-intervention.
+     *
+     * ⚠ NOT `uptimeMillis()`, which is what this was and which **stops counting in deep sleep**.
+     * A 30-minute grace window measured on that clock stays open across a night of standby,
+     * because the phone advanced its uptime by a couple of minutes. The gate would simply not
+     * appear the next morning, and nothing anywhere would look wrong. `elapsedRealtime()` counts
+     * the time the world actually spent.
+     */
     private val enteredAt = HashMap<String, Long>()
 
-    /** Screen off: nobody can open anything, so nothing is watched. See [screenWatcher]. */
-    private var screenOn = true
     /** Inside an app we have already let through — the next decision is minutes away, not frames. */
     private var relaxed = false
 
+    /** Last problem reported in the notification, so it is only rewritten when it changes. */
+    private var lastProblem: String? = null
+    private var lastHealthAt = 0L
+
+    /**
+     * 🐛 2026-08-20, his report: *"not doing the breath check even though it is theoretically on,
+     * stopped all of a sudden."* Silent, permanent, and the notification still said healthy.
+     *
+     * ⚠ THE LOOP MUST NEVER BE ABLE TO STOP. 0.14.0 made it conditional — it only re-posted itself
+     * `if (screenOn)`, and `screenOn` was a cached boolean set by a BroadcastReceiver. That gave
+     * the entire watcher **one single ignition path**: miss one `ACTION_SCREEN_ON` — a missed
+     * broadcast, a stale flag, any cause at all — and the loop is dead until the service is, with
+     * every outward sign still reading normal. Before 0.14.0 the loop re-posted unconditionally and
+     * therefore *could not* fail this way.
+     *
+     * Now it always re-posts, and asks [PowerManager] for the screen state at the moment it runs
+     * rather than trusting a flag somebody else maintains. The battery win is untouched: the cost
+     * was never the empty tick, it was `queryEvents` — and that is what gets skipped while dark.
+     *
+     * ⚠ Every `post(tick)` MUST be preceded by `removeCallbacks(tick)`. An unconditional re-post is
+     * not self-limiting: a second chain would double the poll rate for the life of the process.
+     */
     private val tick = object : Runnable {
         override fun run() {
-            try { check() } catch (_: Throwable) { /* a bad poll must never kill the service */ }
-            if (screenOn) handler.postDelayed(this, if (relaxed) POLL_RELAXED else POLL_ACTIVE)
+            val awake = runCatching { power.isInteractive }.getOrDefault(true)
+            if (awake) {
+                try { check() } catch (_: Throwable) { /* a bad poll must never kill the service */ }
+                try { health() } catch (_: Throwable) { }
+            }
+            handler.postDelayed(this, when {
+                !awake  -> POLL_DARK
+                relaxed -> POLL_RELAXED
+                else    -> POLL_ACTIVE
+            })
         }
     }
 
     /**
-     * ⭐ THE POLL STOPS DEAD WHEN THE SCREEN GOES OFF — and that is what pays for it being fast.
-     *
-     * The old loop ran every 350 ms forever, including all night with the screen dark, when it is
-     * impossible for anyone to open anything. That was pure waste, and the cost of it was being
-     * charged against the one moment precision actually matters: **the instant an app comes
-     * forward.** Spending nothing while the screen is off buys a much tighter poll while it is on,
-     * for less total work than before.
-     *
-     * A screen coming on also checks IMMEDIATELY rather than waiting for the next tick — unlocking
-     * straight into a watched app is exactly the case where a whole poll interval of delay is most
-     * visible.
+     * The receiver is now an **accelerator, never the ignition**. Waking straight into a watched
+     * app is where a whole poll interval of delay is most visible, so a screen coming on re-checks
+     * immediately instead of waiting for the next tick. But the loop no longer depends on it: if
+     * every one of these broadcasts were dropped, the watcher would still run. A receiver that
+     * cannot be wrong beats a receiver with a correct guard.
      */
     private val screenWatcher = object : android.content.BroadcastReceiver() {
         override fun onReceive(c: Context?, i: Intent?) {
-            when (i?.action) {
-                Intent.ACTION_SCREEN_OFF -> {
-                    screenOn = false
-                    handler.removeCallbacks(tick)
-                }
-                Intent.ACTION_SCREEN_ON, Intent.ACTION_USER_PRESENT -> {
-                    if (!screenOn) {
-                        screenOn = true
-                        // the foreground app may have changed while we were not looking
-                        lastForeground = null
-                        handler.removeCallbacks(tick)
-                        handler.post(tick)
-                    }
-                }
-            }
+            // the foreground app may have changed while the screen was dark
+            lastForeground = null
+            handler.removeCallbacks(tick)
+            handler.post(tick)
         }
     }
 
@@ -95,6 +116,7 @@ class GateService : Service() {
         pal = Palette.current(prefs)
         usage = getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
         wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        power = getSystemService(Context.POWER_SERVICE) as PowerManager
         startForeground(NOTIF_ID, notification())
 
         val f = android.content.IntentFilter().apply {
@@ -107,6 +129,7 @@ class GateService : Service() {
         androidx.core.content.ContextCompat.registerReceiver(
             this, screenWatcher, f, androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED
         )
+        handler.removeCallbacks(tick)   // invariant: every post pairs with a remove
         handler.post(tick)
     }
 
@@ -157,10 +180,53 @@ class GateService : Service() {
         if (since != null && windowExpired(current, since)) showGate(current)
     }
 
+    /**
+     * ⭐ THE SERVICE MUST BE ABLE TO SAY WHY IT IS SILENT.
+     *
+     * This app has no network, no telemetry and no crash reporter — by design, and that is not
+     * changing. The consequence is that **the notification is its only voice**, and on 2026-08-20
+     * that voice was saying "One breath before the door opens" while the watcher was doing
+     * nothing at all. A gate that fails open and says nothing is indistinguishable from a gate
+     * that is working and simply has not been needed yet.
+     *
+     * Usage Access can be withdrawn — by the user, by a settings sweep, by an OEM cleanup — and
+     * `queryEvents` then returns an empty stream rather than throwing. Silence reads exactly like
+     * "nothing came to the foreground". So it gets asked directly.
+     */
+    private fun health() {
+        val now = SystemClock.elapsedRealtime()
+        if (now - lastHealthAt < HEALTH_EVERY_MS) return
+        lastHealthAt = now
+        val problem = when {
+            !hasUsageAccess()             -> "Usage access is off — tap to fix"
+            !Settings.canDrawOverlays(this) -> "Display over other apps is off — tap to fix"
+            !prefs.enabled                -> "Paused"
+            prefs.watched.isEmpty()       -> "No apps chosen yet"
+            else                          -> null
+        }
+        if (problem == lastProblem) return
+        lastProblem = problem
+        runCatching {
+            getSystemService(NotificationManager::class.java).notify(NOTIF_ID, notification(problem))
+        }
+    }
+
+    /** AppOps, not a try/catch around `queryEvents` — a revoked grant returns empty, never throws. */
+    private fun hasUsageAccess(): Boolean = runCatching {
+        val ops = getSystemService(Context.APP_OPS_SERVICE) as android.app.AppOpsManager
+        val op = android.app.AppOpsManager.OPSTR_GET_USAGE_STATS
+        val uid = android.os.Process.myUid()
+        val mode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            ops.unsafeCheckOpNoThrow(op, uid, packageName)
+        else
+            @Suppress("DEPRECATION") ops.checkOpNoThrow(op, uid, packageName)
+        mode == android.app.AppOpsManager.MODE_ALLOWED
+    }.getOrDefault(true)   // never let a diagnostic be the thing that breaks the gate
+
     private fun windowExpired(pkg: String, since: Long): Boolean {
         val minutes = prefs.reinterventionFor(pkg)
         if (minutes <= 0) return true                       // 0 = ask every time
-        return SystemClock.uptimeMillis() - since >= minutes * 60_000L
+        return SystemClock.elapsedRealtime() - since >= minutes * 60_000L
     }
 
     // ── the gate ────────────────────────────────────────────────────────────
@@ -267,7 +333,7 @@ class GateService : Service() {
 
     /** Opening the door: the circle swallows the screen, then the gate lifts. */
     private fun letIn(container: FrameLayout, pkg: String) {
-        enteredAt[pkg] = SystemClock.uptimeMillis()
+        enteredAt[pkg] = SystemClock.elapsedRealtime()
         val breath = container.getChildAt(0) as? BreathView
         // fade the words/buttons out first so they don't sit on top of the expanding circle
         for (i in 1 until container.childCount) {
@@ -297,7 +363,7 @@ class GateService : Service() {
     }
 
     // ── the notification the OS requires of a foreground service ────────────
-    private fun notification(): Notification {
+    private fun notification(problem: String? = null): Notification {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val ch = NotificationChannel(CHANNEL, "Gate", NotificationManager.IMPORTANCE_MIN)
                 .apply { setShowBadge(false) }
@@ -305,9 +371,14 @@ class GateService : Service() {
         }
         val b = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             Notification.Builder(this, CHANNEL) else @Suppress("DEPRECATION") Notification.Builder(this)
-        return b.setContentTitle("BreathGate")
-            .setContentText("One breath before the door opens.")
+        val tap = android.app.PendingIntent.getActivity(
+            this, 0, Intent(this, MainActivity::class.java),
+            android.app.PendingIntent.FLAG_IMMUTABLE or android.app.PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        return b.setContentTitle(if (problem == null) "BreathGate" else "BreathGate isn't watching")
+            .setContentText(problem ?: "One breath before the door opens.")
             .setSmallIcon(android.R.drawable.ic_menu_view)
+            .setContentIntent(tap)
             .setOngoing(true)
             .build()
     }
@@ -331,6 +402,15 @@ class GateService : Service() {
          */
         private const val POLL_ACTIVE = 150L
         private const val POLL_RELAXED = 600L
+        /**
+         * While the screen is dark. The tick still runs — that is the whole point, it is what
+         * lets the loop come back on its own — but it does no work beyond asking whether the
+         * screen is on. Four wakeups a minute of one boolean read costs nothing next to the
+         * `queryEvents` call it is skipping.
+         */
+        private const val POLL_DARK = 15_000L
+        /** Permissions do not change at 150 ms. */
+        private const val HEALTH_EVERY_MS = 30_000L
         /** Long enough to survive a starved tick, short enough to stay cheap to parse. */
         private const val LOOKBACK_MS = 5_000L
 

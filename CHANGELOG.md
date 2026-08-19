@@ -4,6 +4,26 @@ Versions before 0.12.0 were distributed privately while the app was shaped again
 They are listed because a project that appears fully formed is hiding how it got there, and the
 mistakes below are the most useful part of this file.
 
+## 0.14.1 — 2026-08-20
+
+**The gate stopped watching, and said nothing.** Reported the same day: *"not doing the breath
+check even though it is theoretically on, stopped all of a sudden."*
+
+- **The watch loop can no longer stop.** 0.14.0 made the loop re-post itself only while a cached
+  screen-state flag was true, and that flag was maintained by a broadcast receiver — which left the
+  whole watcher with a single ignition path. One missed screen-on broadcast and it was dead until
+  the service restarted, with every outward sign still normal. The loop now always re-posts and
+  asks the system for the screen state as it runs. The receiver is still there, but only to react
+  faster; if every one of its broadcasts were dropped, the gate would still work. The battery
+  saving is unchanged — the cost was never the tick, it was the usage query that gets skipped.
+- **Grace windows are measured on a clock that runs.** Re-intervention used a clock that stops
+  counting during deep sleep, so a 30-minute window could stay open across a night of standby and
+  the gate would not appear the next morning.
+- **The notification says when something is wrong.** With no network and no telemetry it is the
+  app's only voice, and it read "One breath before the door opens" while the watcher was doing
+  nothing. It now reports missing Usage Access, missing overlay permission, being paused, or
+  having no apps chosen — and tapping it opens the app.
+
 ## 0.14.0
 
 - **Fixed: the app was briefly visible before the gate appeared.** Two causes compounding. The
