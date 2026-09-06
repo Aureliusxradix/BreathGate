@@ -2,6 +2,11 @@
 
 **One breath before the door opens.**
 
+Free, GPL-3.0, Android 8.0 and up. Made by [Aurelius × Radix](https://aureliusxradix.com/); the
+app's own page, with every install route and the fingerprint to check each one against, is
+<https://aureliusxradix.com/work/breathgate/>. This is the Android BreathGate; the App Store app
+of the same name is another maker's work.
+
 When an app you have chosen comes to the foreground, BreathGate asks you for a breath, then asks
 whether you still want to go in. Blockers get uninstalled at the exact moment they are needed.
 This one asks for about twenty seconds and a decision, then steps aside whichever way you decide.
@@ -165,7 +170,7 @@ different program wearing this one's clothes.
 
 Free, and staying free. Every feature is in the app already.
 
-- **Liberapay** — <https://liberapay.com/Aureliusxradix> (recurring; the platform takes no cut)
+- **Liberapay** — <https://liberapay.com/AureliusxRadix> (recurring; the platform takes no cut)
 - **Monero** — `87TdnZcH3TSLtneBhq9qzx9hKMUWfBUeTfF6RERT9NiVb4VJ6q3EA4YMwooSaTyxq3XVLcUrzU4QA9WdvaGPBSurA4WYwqs`
 
 Both are on the app's own support screen too, with a copy button for the second, since ninety-five
