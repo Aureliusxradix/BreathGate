@@ -1,0 +1,11 @@
+A conscious gate in front of an unconscious intake. When an app you have chosen comes to the foreground, BreathGate asks for a breath, and then asks whether you still want to go in.
+
+It is not a blocker. Blockers get uninstalled at the exact moment they are needed. This asks for about twenty seconds and a decision, then gets out of the way either way.
+
+<b>There is no INTERNET permission, and there never will be.</b> Not a promise about data collection that you would have to take on trust: the app cannot reach the network at all, and you can verify that from the manifest before installing. No account, no sync, no analytics, no crash reporting, no server.
+
+<ul><li>Box breathing (4·4·4·4) by default, plus 4-7-8, simple in-and-out, or any counts you choose.</li><li>Five ways of drawing the breath, all growing from the centre: orb, bloom, box, guilloche, and coral, a lung whose tubes fill with air from the middle out.</li><li>Every prompt is editable, including the question at the end.</li><li>Re-intervention: the gate returns while you are still inside a long session, not only when you re-open the app. Set per app.</li><li>Optional sound, generated on the device: a drone in the palette's own key and a bell on each phase change. No audio files, no downloads.</li><li>Optional heartbeat pulse, in colour and in sound, driven by one shared function.</li><li>Six palettes plus a hand-built one, and a light mode.</li></ul>
+
+Uses Usage Access rather than an AccessibilityService, deliberately, since that API is being restricted for non-accessibility apps and is revoked outright under Advanced Protection Mode.
+
+<b>How this was made:</b> most of the code was written by an AI, directed by the author, who is responsible for the result. Stated here so you can decide with it in hand. See "How this was made" in the README. The build is reproducible and the app has no network permission, and both of those are things you can check yourself.

@@ -1,0 +1,4 @@
+0.14.1
+- The watch loop can no longer stop.
+- Grace windows are measured on a clock that runs.
+- The notification says when something is wrong.
