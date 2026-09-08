@@ -4,6 +4,19 @@ Versions before 0.12.0 were distributed privately while the app was shaped again
 They are listed because a project that appears fully formed is hiding how it got there, and the
 mistakes below are the most useful part of this file.
 
+## 0.14.2 — 2026-09-08
+
+**Store metadata rides in the tree.** F-Droid reads an app's title and description from the
+tagged commit it builds, and the Fastlane files landed after 0.14.1 was tagged. This release
+exists to carry them, so the listing on f-droid.org reads the same as the one here.
+
+- `fastlane/metadata/android/en-US/`: title, short and full description, per-version changelogs,
+  the icon at 512 px.
+- README names the maker and the app's page; the BreathGate on Apple's App Store is another
+  maker's work.
+- A stray second Gradle wrapper at `gradle/gradle/wrapper/` is gone.
+- The app itself is 0.14.1 under a new number.
+
 ## 0.14.1 — 2026-08-20
 
 **The gate stopped watching, and said nothing.** Reported the same day: *"not doing the breath

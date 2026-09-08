@@ -1,0 +1,3 @@
+0.14.2
+- Store metadata (title, description, icon) now travels in the source tree.
+- The app itself is 0.14.1 under a new number.
