@@ -32,8 +32,8 @@ android {
         applicationId = "dev.breathgate"
         minSdk = 26
         targetSdk = 35
-        versionCode = 20
-        versionName = "0.14.2"
+        versionCode = 21
+        versionName = "0.14.3"
     }
 
     // Two flavours, one codebase (ruled 2026-08-13):
@@ -59,6 +59,11 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+            // No META-INF/version-control-info.textproto. AGP writes the git revision into the APK when
+            // it builds inside a checkout and "NO_SUPPORTED_VCS_FOUND" when it does not — so the same
+            // source gave two different APKs, and F-Droid's reproducible check failed on exactly that
+            // one file (fdroiddata MR !48012, pipeline 2924847448, 2026-10-08).
+            vcsInfo.include = false
             if (keystoreProps.getProperty("storeFile") != null) {
                 signingConfig = signingConfigs.getByName("release")
             }

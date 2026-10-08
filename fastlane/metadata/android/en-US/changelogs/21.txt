@@ -1,0 +1,3 @@
+0.14.3
+- The build no longer stamps version-control info into the APK, so F-Droid's rebuild matches this one byte for byte.
+- The app itself is 0.14.2 under a new number.

@@ -87,9 +87,9 @@ Binaries: https://github.com/Aureliusxradix/BreathGate/releases/download/v%v/Bre
 # versionCode was bumped and the versionName beside it was not, which would have submitted a build
 # labelled 0.11.1 carrying code 14. Two copies of one fact is one copy too many.
 Builds:
-  - versionName: 0.14.2
-    versionCode: 20
-    commit: v0.14.2
+  - versionName: 0.14.3
+    versionCode: 21
+    commit: v0.14.3
     subdir: app
     gradle:
       - gift
@@ -99,5 +99,5 @@ AllowedAPKSigningKeys: d0b6b276aa2cffc4b1b2850d2373dd3958c92bd68aa29a6ed76c17ffb
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: 0.14.2
-CurrentVersionCode: 20
+CurrentVersion: 0.14.3
+CurrentVersionCode: 21

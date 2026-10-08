@@ -4,6 +4,17 @@ Versions before 0.12.0 were distributed privately while the app was shaped again
 They are listed because a project that appears fully formed is hiding how it got there, and the
 mistakes below are the most useful part of this file.
 
+## 0.14.3 — 2026-10-08
+
+**The build no longer records where it was built from.** F-Droid rebuilt 0.14.2 from source and
+compared it with the APK published here. Every file matched except one: the Android build tools
+write the git revision into the APK when they build inside a git checkout, and a placeholder when
+they do not. The release here was built outside a checkout and F-Droid's inside one. That file is
+now left out, so the build comes out the same either way.
+
+- `vcsInfo.include = false` on the release build.
+- The app itself is 0.14.2 under a new number.
+
 ## 0.14.2 — 2026-09-08
 
 **Store metadata rides in the tree.** F-Droid reads an app's title and description from the
